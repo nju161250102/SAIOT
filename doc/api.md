@@ -4,6 +4,8 @@
 
 ### 设备Device
 
+设备名称不能重复
+
 ```json
 {
     // 数据库自动生成主键
@@ -54,7 +56,11 @@
     // 转发列
     "columns": "value,time",
     // 转发条件
-    "condition": "value > 20"
+    "condition": "value > 20",
+    // 转发路径
+    "path": "/warning/high_temperature",
+    // 状态：打开-1/关闭-0
+    "status": 0
 }
 ```
 
@@ -131,6 +137,8 @@
 
 ### 新增规则
 
+新增规则时后端将状态设置为1（启用）
+
 #### Request
 
 ```json
@@ -143,7 +151,8 @@
     // topic同样
     "topic": "temperature",
     "columns": "value,time",
-    "condition": "value > 20"
+    "condition": "value > 20",
+    "path": "",
 }
 ```
 
@@ -153,6 +162,23 @@
 {
     "status": 1,
     "msg": "添加成功"
+}
+```
+
+### 切换规则状态
+
+#### Request
+
+```json
+// [POST] /rule/switch/{ruleId}
+```
+
+#### Response
+
+```json
+{
+    "status": 1,
+    "msg": "切换成功"
 }
 ```
 
@@ -174,9 +200,39 @@
     "deviceId": 1,
     "topic": "temperature",
     "columns": "value,time",
-    "condition": "value > 20"
+    "condition": "value > 20",
+    "path": "",
+    "status": 1
 }]
 ```
 
+### 转发处理目的地址
 
+此接口由后端规则引擎实现转发，与前端无关
+
+#### Request
+
+```json
+// [POST] 转发至不同的接口
+{
+    "ruleId": 1,
+    "data": {
+        // 数据负载
+    }
+}
+```
+
+## 底层API
+
+### 查询设备状态
+
+device包中提供了`query_status`方法，根据设备名查询设备是否连接
+
+### 规则引擎
+
+后端启动时创建`RuleEngine`实例
+
+新增设备后必须调用其`add_client`方法，参数是新增的设备实体
+
+创建规则、修改规则后必须调用其`update_client`方法，参数是设备ID
 
