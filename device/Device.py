@@ -27,7 +27,7 @@ class Device:
             try:
                 while True:
                     try:
-                        await self.client.publish(self.topic, bytearray(str(next(self.g)), 'utf-8'), qos=0x02)
+                        await self.client.publish(self.name + "/" + self.topic, bytearray(str(next(self.g)), 'utf-8'), qos=0x02)
                         await asyncio.sleep(self.interval)
                     except StopIteration:
                         break
@@ -39,7 +39,7 @@ class Device:
     async def ping(self):
         try:
             while True:
-                await self.client.publish("status/" + self.name, b"ok", qos=0x02)
+                await self.client.publish(self.name + "/status", b"ok", qos=0x02)
                 await asyncio.sleep(1)
         except ConnectException as ce:
             logging.error("Connection failed: %s" % ce)

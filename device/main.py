@@ -11,7 +11,7 @@ async def async_query_status(device_name: str):
     client = MQTTClient()
     await client.connect('ws://127.0.0.1:8081/')
     await client.subscribe([
-        ("status/" + device_name, 0x02),
+        (device_name + "/status", 0x02),
     ])
     try:
         message = await client.deliver_message(3)
@@ -19,7 +19,7 @@ async def async_query_status(device_name: str):
     except TimeoutError as ce:
         logging.error("Client exception: %s" % ce)
     finally:
-        await client.unsubscribe("status/" + device_name)
+        await client.unsubscribe(device_name + "/status")
         await client.disconnect()
         return status
 
