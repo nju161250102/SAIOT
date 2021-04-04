@@ -59,7 +59,7 @@
     "condition": "value > 20",
     // 转发路径
     "path": "/warning/high_temperature",
-    // 状态：打开-1/关闭-0
+    // 状态：打开-1/关闭-0。默认为0
     "status": 0
 }
 ```
