@@ -18,20 +18,20 @@ def add_device():
     port = request.form['port']
     topic = request.form['topic']
     # Set response if error.
-    err_msg = '添加设备失败：'
-    is_error = False
-    if ip is None:
-        err_msg += '设备ip不能为空！'
-        is_error = True
-    if port is None:
-        err_msg += '设备port不能为空！'
-        is_error = True
-    if topic is None:
-        err_msg += '设备topic不能为空！'
-        is_error = True
-    if is_error:
-        response = {'status': 0, 'msg': err_msg}
-        return json.dumps(response, ensure_ascii=False)
+    # err_msg = '添加设备失败：'
+    # is_error = False
+    # if ip is None:
+    #     err_msg += '设备ip不能为空！'
+    #     is_error = True
+    # if port is None:
+    #     err_msg += '设备port不能为空！'
+    #     is_error = True
+    # if topic is None:
+    #     err_msg += '设备topic不能为空！'
+    #     is_error = True
+    # if is_error:
+    #     response = {'status': 0, 'msg': err_msg}
+    #     return json.dumps(response, ensure_ascii=False)
 
     # Query db and set response if success.
     device = Device.create(
