@@ -20,7 +20,9 @@ def add_rule():
     rule = Rule.create(
         name=name, description=description, device_id=device_id,
         temperature=temperature, columns=columns,
-        condition=condition, path=path
+        condition=condition, path=path,
+        # Set status as 1 for new rule.
+        status=1
     )
     rule.save()
     response = {"status": 1, "msg": "添加成功"}
