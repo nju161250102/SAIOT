@@ -6,7 +6,7 @@ from threading import Thread
 import requests
 from hbmqtt.client import MQTTClient, ClientException
 
-from RuleParser import RuleParser
+from .RuleParser import RuleParser
 
 
 class Client(Thread):

@@ -1,3 +1,3 @@
-from RuleEngine import RuleEngine
+from .RuleEngine import RuleEngine
 
 __all__ = [RuleEngine]

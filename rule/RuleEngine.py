@@ -1,18 +1,21 @@
-from Client import Client
+from .Client import Client
 
 
 class RuleEngine:
+    client_map = {}
 
-    def __init__(self, device_list):
-        self.client_map = {}
+    @staticmethod
+    def init(device_list):
         for d in device_list:
-            self.add_client(d)
+            RuleEngine.add_client(d)
 
-    def add_client(self, device):
+    @staticmethod
+    def add_client(device):
         client = Client(device.name)
-        self.client_map[device.id] = client
+        RuleEngine.client_map[device.id] = client
         client.start()
 
-    def update_client(self, device_id):
-        client = self.client_map[device_id]
+    @staticmethod
+    def update_client(device_id):
+        client = RuleEngine.client_map[device_id]
         client.version += 1

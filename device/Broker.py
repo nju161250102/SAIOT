@@ -8,7 +8,7 @@ class MyBroker:
     def __init__(self):
         config = {
             'listeners': {
-                'ws-mqtt': {
+                'default': {
                     'bind': '127.0.0.1:8081',
                     'type': 'ws',
                     'max_connections': 20,
