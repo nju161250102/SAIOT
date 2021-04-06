@@ -3,7 +3,7 @@ import math
 import asyncio
 
 from hbmqtt.client import MQTTClient
-from Device import Device
+from device import Device
 
 
 async def async_query_status(device_name: str):
@@ -14,7 +14,7 @@ async def async_query_status(device_name: str):
         (device_name + "/status", 0x02),
     ])
     try:
-        message = await client.deliver_message(3)
+        message = await client.deliver_message(2)
         status = (message.packet_id is not None)
     except TimeoutError as ce:
         logging.error("Client exception: %s" % ce)
@@ -31,8 +31,10 @@ def query_status(device_name: str):
     :param device_name: 设备名
     :return: bool 表示是否连接
     """
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     get_future = asyncio.ensure_future(async_query_status(device_name))
-    asyncio.get_event_loop().run_until_complete(get_future)
+    loop.run_until_complete(get_future)
     return get_future.result()
 
 

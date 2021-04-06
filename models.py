@@ -1,10 +1,6 @@
 from peewee import *
 
-database = SqliteDatabase('../saiot.db')
-
-
-class UnknownField(object):
-    def __init__(self, *_, **__): pass
+database = SqliteDatabase('./saiot.db')
 
 
 class BaseModel(Model):
@@ -13,6 +9,7 @@ class BaseModel(Model):
 
 
 class Connection(BaseModel):
+    id = AutoField()
     device_id = IntegerField(column_name='deviceId')
     topic = TextField(null=True)
 
@@ -21,7 +18,8 @@ class Connection(BaseModel):
 
 
 class Device(BaseModel):
-    decode = TextField(null=True)
+    id = AutoField()
+    dcode = TextField(null=True)
     description = TextField(null=True)
     ip = TextField(null=True)
     name = TextField(null=True)
@@ -34,6 +32,7 @@ class Device(BaseModel):
 
 
 class Rule(BaseModel):
+    id = AutoField()
     columns = TextField(null=True)
     condition = TextField(null=True)
     description = TextField(null=True)
@@ -45,13 +44,3 @@ class Rule(BaseModel):
 
     class Meta:
         table_name = 'rule'
-
-
-class SqliteSequence(BaseModel):
-    name = BareField(null=True)
-    seq = BareField(null=True)
-
-    class Meta:
-        table_name = 'sqlite_sequence'
-        primary_key = False
-

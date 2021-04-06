@@ -1,5 +1,8 @@
 from flask import Blueprint, request
-from models import Device
+from models import Device, Connection
+from rule import RuleEngine
+from device import query_status
+
 import json
 
 device_module = Blueprint("device", __name__)
@@ -17,33 +20,33 @@ def add_device():
     ip = request.form['ip']
     port = request.form['port']
     topic = request.form['topic']
-    # Set response if error.
-    # err_msg = '添加设备失败：'
-    # is_error = False
-    # if ip is None:
-    #     err_msg += '设备ip不能为空！'
-    #     is_error = True
-    # if port is None:
-    #     err_msg += '设备port不能为空！'
-    #     is_error = True
-    # if topic is None:
-    #     err_msg += '设备topic不能为空！'
-    #     is_error = True
-    # if is_error:
-    #     response = {'status': 0, 'msg': err_msg}
-    #     return json.dumps(response, ensure_ascii=False)
-
-    # Query db and set response if success.
     device = Device.create(
         name=name, dcode=dcode, secret=secret, type=device_type,
-        ip=ip, port=port, topic=topic, description=description
+        ip=ip, port=port, description=description
     )
     device.save()
+    for s in topic.split(";"):
+        Connection.create(device_id=device.id, topic=s.strip()).save()
+    RuleEngine.add_client(device)
     response = {'status': 1, 'msg': "添加成功"}
     return json.dumps(response, ensure_ascii=False)
 
 
 @device_module.route('/', methods=["GET"])
 def get_all_device():
-    devices = Device.select()
-    return json.dumps(devices)
+    result = []
+    for device in Device.select():
+        topics = [c.topic for c in Connection.select().where(Connection.device_id == device.id)]
+        result.append({
+            "id": device.id,
+            "name": device.name,
+            "dcode": device.dcode,
+            "secret": device.secret,
+            "type": device.type,
+            "description": device.description,
+            "ip": device.ip,
+            "port": device.port,
+            "topic": ",".join(topics),
+            "status": 1 if query_status(device.name) else 0
+        })
+    return json.dumps(result)

@@ -1,5 +1,7 @@
 import logging
 import asyncio
+import time
+import json
 
 from hbmqtt.client import MQTTClient, ConnectException
 
@@ -27,7 +29,11 @@ class Device:
             try:
                 while True:
                     try:
-                        await self.client.publish(self.name + "/" + self.topic, bytearray(str(next(self.g)), 'utf-8'), qos=0x02)
+                        data = {
+                            "value": next(self.g),
+                            "time": time.asctime()
+                        }
+                        await self.client.publish(self.name + "/" + self.topic, bytearray(json.dumps(data, ensure_ascii=False), 'utf-8'), qos=0x02)
                         await asyncio.sleep(self.interval)
                     except StopIteration:
                         break
