@@ -44,3 +44,13 @@ class Rule(BaseModel):
 
     class Meta:
         table_name = 'rule'
+
+
+class Status(BaseModel):
+    id = AutoField()
+    device_id = IntegerField(column_name='deviceId')
+    value = FloatField(constraints=[SQL("DEFAULT 0.0")])
+    time = TimestampField()
+
+    class Meta:
+        table_name = 'status'
