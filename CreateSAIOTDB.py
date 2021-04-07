@@ -51,8 +51,8 @@ c.execute("DROP TABLE IF EXISTS status;")
 c.execute('''
 CREATE TABLE status (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  deviceId INTEGER DEFAULT 0,
-  value FLOAT DEFAULT 0.0,
-  time INTEGER DEFAULT 0);
+  deviceId INTEGER NOT NULL,
+  value FLOAT NOT NULL ,
+  time INTEGER NOT NULL );
 ''')
 
