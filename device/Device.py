@@ -31,7 +31,7 @@ class Device:
                     try:
                         data = {
                             "value": next(self.g),
-                            "time": time.asctime()
+                            "time": int(time.time())
                         }
                         await self.client.publish(self.name + "/" + self.topic, bytearray(json.dumps(data, ensure_ascii=False), 'utf-8'), qos=0x02)
                         await asyncio.sleep(self.interval)

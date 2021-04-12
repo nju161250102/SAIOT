@@ -7,6 +7,12 @@ import json
 rule_module = Blueprint("rule", __name__)
 
 
+@rule_module.route('/test/', methods=["POST"])
+def test():
+    print(request.data)
+    return "{}"
+
+
 @rule_module.route('/', methods=["POST"])
 def add_rule():
     # Draw attributes from form.
@@ -48,12 +54,13 @@ def get_all_rule():
 
 @rule_module.route('/switch/<rule_id>', methods=['POST'])
 def switch_rule(rule_id):
-    rule = Rule.select().where(Rule.id == int(rule_id))
+    rule = Rule.get_by_id(int(rule_id))
     ori_status = int(rule.status)
     new_status = (ori_status + 1) % 2
     # Update: Switch status from 1 -> 0 or 0 -> 1
     rule.status = new_status
     rule.save()
     msg = "将规则%s的状态从%s切换至%s" % (rule_id, ori_status, new_status)
+    RuleEngine.update_client(rule.device_id)
     response = {"status": 1, "msg": msg}
     return json.dumps(response, ensure_ascii=False)
