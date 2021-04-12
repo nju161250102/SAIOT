@@ -7,12 +7,6 @@ import json
 rule_module = Blueprint("rule", __name__)
 
 
-@rule_module.route('/test/', methods=["POST"])
-def test():
-    print(request.data)
-    return "{}"
-
-
 @rule_module.route('/', methods=["POST"])
 def add_rule():
     # Draw attributes from form.

@@ -27,7 +27,8 @@ class RuleParser:
             '+': 'plus',
             '-': 'minus',
             '*': 'multiply',
-            '/': 'divide'
+            '/': 'divide',
+            '%': 'mod'
         }
 
         def eq(self, *args):
@@ -81,8 +82,8 @@ class RuleParser:
         def divide(self, *args):
             return float(args[0]) / float(args[1])
 
-        def abs(self, *args):
-            return abs(args[0])
+        def mod(self, *args):
+            return int(args[0]) % int(args[1])
 
     @staticmethod
     def validate(rule):

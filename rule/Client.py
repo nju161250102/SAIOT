@@ -5,9 +5,11 @@ from threading import Thread
 
 import requests
 from hbmqtt.client import MQTTClient, ClientException
+from requests import RequestException
 
 from .RuleParser import RuleParser
 from models import Rule
+from config import host
 
 
 class Client(Thread):
@@ -15,6 +17,7 @@ class Client(Thread):
     def __init__(self, device):
         super().__init__()
         self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
         self.client = MQTTClient(loop=self.loop)
         self.name = device.name
         self.device_id = device.id
@@ -23,7 +26,6 @@ class Client(Thread):
         logging.info("Device %s loads %d rules" % (self.name, len(self.rules)))
 
     def run(self) -> None:
-        asyncio.set_event_loop(self.loop)
         try:
             self.loop.run_until_complete(self.connect())
             self.loop.run_until_complete(self.subscribe())
@@ -52,12 +54,17 @@ class Client(Thread):
                     data = json.loads(packet.payload.data.decode(encoding="utf-8"))
                     # 如果规则匹配
                     if RuleParser(r.condition).evaluate(data):
-                        logging.info("%s => %s" % (packet.variable_header.topic_name, packet.payload.data.decode(encoding="utf-8")))
+                        logging.info("Rule: %d, %s => %s" %
+                                     (r.id, packet.variable_header.topic_name, packet.payload.data.decode(encoding="utf-8")))
                         forward_data = dict(filter(lambda s: s[0] in r.columns.strip(","), data.items()))
-                        requests.post(r.path, data=json.dumps({
-                            "ruleId": r.id,
-                            "data": forward_data
-                        }))
+                        try:
+                            requests.post("http://%s:5000/%s" % (host, r.path), data=json.dumps({
+                                "ruleId": r.id,
+                                "deviceId": self.device_id,
+                                "data": forward_data
+                            }))
+                        except RequestException as e:
+                            break
         except ClientException as ce:
             logging.error("Client exception: %s" % ce)
             await self.client.unsubscribe([(self.name + "/" + r.topic, 0x02) for r in self.rules])

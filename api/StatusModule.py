@@ -11,12 +11,13 @@ status_module = Blueprint("status", __name__)
 @status_module.route('/', methods=["POST"])
 def save_status():
     req_data = json.loads(request.data)
-    status = Status.create(
-        device_id=req_data["deviceId"],
-        value=req_data["data"]["value"],
-        time=req_data["data"]["time"]
-    )
-    status.save()
+    if len(Status.select().where(Status.time == req_data["data"]["time"])) == 0:
+        status = Status.create(
+            device_id=req_data["deviceId"],
+            value=req_data["data"]["value"],
+            time=req_data["data"]["time"]
+        )
+        status.save()
     return "{}"
 
 
@@ -38,11 +39,13 @@ def show_histogram():
         else:
             week_values = [random.randrange(200, 900, 1) / 10.0 for i in range(7)]
         # 获取最新的设备状态，对齐设备名称与最新值
-        latest_status = Status.select().where(Status.device_id == d_meta["id"]).order_by(Status.time)[0]
+        latest_status = Status.select().where(Status.device_id == d_meta["id"]).order_by(Status.time.desc())
+        if len(latest_status) == 0:
+            continue
         response.append({
             "id": d_meta["id"],
             "name": d_meta["name"],
-            "value": latest_status.value,
+            "value": latest_status[0].value,
             "week_val": week_values
         })
     return json.dumps(response, ensure_ascii=False)

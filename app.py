@@ -4,7 +4,8 @@ from flask_cors import CORS
 
 from models import Device
 from rule import RuleEngine
-from api import *
+from api import device_module, rule_module, connection_module, status_module
+from config import host
 
 app = Flask(__name__)
 app.register_blueprint(device_module, url_prefix='/api/device/')
@@ -23,4 +24,4 @@ if __name__ == '__main__':
     formatter = "%(asctime)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=formatter)
     RuleEngine.init(Device.select())
-    app.run(host="192.168.2.245")
+    app.run(host=host)

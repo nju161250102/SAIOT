@@ -8,7 +8,7 @@ from hbmqtt.client import MQTTClient, ConnectException
 
 class Device:
 
-    def __init__(self, name, topic, g, interval: int):
+    def __init__(self, name, topic, g, interval: float):
         self.client = MQTTClient()
         self.name = name
         self.topic = topic

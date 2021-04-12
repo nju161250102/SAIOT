@@ -1,6 +1,7 @@
 import logging
 import math
 import asyncio
+import random
 
 from hbmqtt.client import MQTTClient
 from device import Device
@@ -41,7 +42,7 @@ def query_status(device_name: str):
 def temperature_fun(high, low, T, interval):
     i = 0
     while True:
-        y = math.sin(2 * math.pi / T * i) * (high - low) / 2 + (high + low) / 2
+        y = round(math.sin(2 * math.pi / T * i) * (high - low) / 2 + (high + low) / 2 + (random.randrange(-40, 40) / 10), 2)
         yield y
         i += interval
         if i >= T:
@@ -51,8 +52,10 @@ def temperature_fun(high, low, T, interval):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
     # 设备列表，在此处新增设备
-    device_list = []
-    device_list.append(Device("温度1", "temp1", temperature_fun(22, 8, 12, 1), 2))
+    device_list = [Device("东北角温度", "temperature", temperature_fun(25, 8, 120, 1), 0.5),
+                   Device("东南角温度", "temperature", temperature_fun(24, 8, 120, 1), 0.5),
+                   Device("西南角温度", "temperature", temperature_fun(25, 7, 120, 1), 0.5),
+                   Device("西北角温度", "temperature", temperature_fun(24, 7, 120, 1), 0.5)]
     # 先建立连接
     future = asyncio.gather(*[d.connect() for d in device_list])
     asyncio.get_event_loop().run_until_complete(future)

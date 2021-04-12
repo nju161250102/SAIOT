@@ -46,7 +46,7 @@ def get_all_device():
             "description": device.description,
             "ip": device.ip,
             "port": device.port,
-            "topic": ",".join(topics),
-            "status": 1 if query_status(device.name) else 0
+            "topic": ";".join(topics),
+            "status": "已连接" if query_status(device.name) else "未连接"
         })
     return json.dumps(result)
